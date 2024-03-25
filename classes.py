@@ -37,6 +37,8 @@ class SmartMonitoringSystem:
 
     def emulation(self):
         self.password = "33razamassaraksh"
+        print(f'Connection succesfull. New password: {self.password}')
+        return json.dumps({"password_state":self.password})
 
 
 class LifeQuality:
@@ -58,6 +60,8 @@ class LifeQuality:
 
     def emulation(self):
         self.temp = 27
+        print(f'Connection succesfull. New temp: {self.temp}')
+        return json.dumps({"temp_state":self.temp})
 
 
 class Item(abc.ABC):

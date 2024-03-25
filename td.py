@@ -6,11 +6,14 @@ app = Flask(__name__)
 pers_health1 = classes.PersonalHealthcare("smart watch")
 fridge1 = classes.Fridge("vigilante")
 coffeemachine1 = classes.Coffeemachine("six-four-blank")
+smart_sys = classes.SmartMonitoringSystem("papa", "std")
+lf = classes.LifeQuality()
 
 @app.route('/connect_ph')
 def connect_ph():
     return pers_health1.connect()
-#dsds
+
+
 @app.route('/connect_fridge')
 def connect_fridge():
     return fridge1.connect()
@@ -18,7 +21,13 @@ def connect_fridge():
 @app.route('/connect_cfm')
 def connect_cfm():
     return coffeemachine1.connect()
+@app.route('/connect_sys')
+def connect_sys():
+    return smart_sys.emulation()
 
+@app.route('/connect_lf')
+def connect_lf():
+    return lf.emulation()
 
 @app.route('/')
 def main():
