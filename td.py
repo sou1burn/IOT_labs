@@ -10,7 +10,7 @@ coffeemachine1 = classes.Coffeemachine("six-four-blank")
 @app.route('/connect_ph')
 def connect_ph():
     return pers_health1.connect()
-
+#dsds
 @app.route('/connect_fridge')
 def connect_fridge():
     return fridge1.connect()
