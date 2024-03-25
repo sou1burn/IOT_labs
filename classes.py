@@ -1,5 +1,6 @@
 import abc
-
+import json
+import random
 
 class SmartMonitoringSystem:
     def __init__(self, user, password):
@@ -22,11 +23,21 @@ class SmartMonitoringSystem:
     def add_thing(self):
         return("What do you want to add?")
 
+    def delete_thing(self):
+        return ("What thing do you want to delete?")
+
     def add_user(self):
         return("Write info about new user")
 
+    def delete_user(self):
+        return ("Who are we removing from a data pill?")
+
     def get_status_info(self):
         return("status info....d.asads.ds.a.da")
+
+    def emulation(self):
+        self.password = "33razamassaraksh"
+
 
 class LifeQuality:
 
@@ -45,6 +56,8 @@ class LifeQuality:
         self.brightness = curr_brightness
         return f"Level of brightness is: {self.brightness}"
 
+    def emulation(self):
+        self.temp = 27
 
 
 class Item(abc.ABC):
@@ -77,7 +90,12 @@ class PersonalHealthcare(Item):
 
     def connect(self, source):
         super().connect()
-        return "connection to " + source + "has started"
+        self.emulation()
+        print("connection to " + source + "has started")
+        return json.dumps({'sleep_time':self.sleep_time})
+
+    def emulation(self):
+        self.sleep_time = random.randint(2, 5)
 
 class Fridge(Item):
 
@@ -91,8 +109,12 @@ class Fridge(Item):
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
     def connect(self, websource):
-        super().connect()
-        return "connection to " + websource + "has started"
+        self.emulation()
+        print("connection to " + source + "has started")
+        return json.dumps({'value': self.value})
+
+    def emulation(self):
+        self.value = 0
 
 class Coffeemachine(Item):
 
@@ -107,4 +129,9 @@ class Coffeemachine(Item):
 
     def connect(self, source):
         super().connect()
-        return "connection to " + source + "has started"
+        self.emulation()
+        print("connection to " + source + "has started")
+        return json.dumps({'value1': self.value})
+
+    def emulation(self):
+        self.value = 100
