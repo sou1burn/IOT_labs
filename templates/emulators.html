@@ -1,28 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Smart Monitoring System</title>
-    <link rel="stylesheet" type="text/css" href="../static/css/styles.css">
-    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
-    <script src="../static/js/index.js"></script>
+<meta charset="UTF-8">
+<title>Smart Monitoring System</title>
+<link rel="stylesheet" type="text/css" href="C:/Users/spike/PycharmProjects/staj/templates/styles.css">
+<script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="C:/Users/spike/PycharmProjects/staj/index.js"></script>
 </head>
 <body>
 <div id="monitoring_data">
-    <label>Система</label><br>
-    <input type="text" id="password" placeholder="Новый пароль"><br>
+<label>Система</label><br>
+<input type="text" id="password" placeholder="Новый пароль">
+<button onclick="submitPassword()">Отправить</button><br>
 
-    <label>Качество жизни</label><br>
-    <input type="text" id="temp_state" placeholder="Значение температуры"><br>
+<label>Качество жизни</label><br>
+<input type="text" id="temp_state" placeholder="Значение температуры">
+<button onclick="submitTempState()">Отправить</button><br>
 
-    <label>Умные часы</label><br>
-    <input type="text" id="sleep_time" placeholder="Значение для сна"><br>
+<label>Умные часы</label><br>
+<input type="text" id="sleep_time" placeholder="Значение для сна">
+<button onclick="submitSleepTime()">Отправить</button><br>
 
-    <label>Трыц тыц холодильник</label><br>
-    <input type="text" id="value" placeholder="Значение для холодильника"><br>
+<label>Трыц тыц холодильник</label><br>
+<input type="text" id="value" placeholder="Значение для холодильника">
+<button onclick="submitFridgeValue()">Отправить</button><br>
 
-    <label>Кофемашинка</label><br>
-    <input type="text" id="value1" placeholder="Значение для кофемашины"><br>
+<label>Кофемашинка</label><br>
+<input type="text" id="value1" placeholder="Значение для кофемашины">
+<button onclick="submitCoffeemachineValue()">Отправить</button><br>
 </div>
 </body>
 </html>
