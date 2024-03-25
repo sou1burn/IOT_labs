@@ -17,7 +17,7 @@ def connect_ph():
 @app.route('/connect_fridge')
 def connect_fridge():
     return fridge1.connect()
-
+#aaaaa
 @app.route('/connect_cfm')
 def connect_cfm():
     return coffeemachine1.connect()
