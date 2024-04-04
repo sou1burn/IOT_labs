@@ -11,16 +11,20 @@ lf = classes.LifeQuality()
 
 @app.route('/connect_ph')
 def connect_ph():
+
     return pers_health1.connect("pers_health1")
+
 
 
 @app.route('/connect_fridge')
 def connect_fridge():
+
     return fridge1.connect("fridge1")
-#aaaaa
+
 @app.route('/connect_cfm')
 def connect_cfm():
     return coffeemachine1.connect("coffeeMachine1")
+
 @app.route('/connect_sys')
 def connect_sys():
     return smart_sys.emulation()

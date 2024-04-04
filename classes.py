@@ -65,7 +65,6 @@ class LifeQuality:
 
 
 
-
 class Item(abc.ABC):
 
     def __init__(self, name):
@@ -114,9 +113,11 @@ class Fridge(Item):
         self.value = curr_value
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
+
     def connect(self, source):
         self.emulation()
         print("connection to " + source + " has started")
+
         return json.dumps({'value': self.value})
 
     def emulation(self):
