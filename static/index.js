@@ -1,9 +1,9 @@
-/*setInterval(ph_data, 1000)
-setInterval(fridge_data, 1000)
-setInterval(cfm_data, 1000)
-setInterval(sys_data, 1000)
-setInterval(lf_data, 1000)
-*/
+setInterval(submitPassword, 10000)
+setInterval(submitTempState, 10000)
+setInterval(submitSleepTime, 10000)
+setInterval(submitFridgeValue, 10000)
+setInterval(submitCoffeeMachineValue, 10000)
+
 
 function submitPassword(){
     $.ajax({
@@ -57,7 +57,7 @@ function submitFridgeValue(){
     });
 }
 
-function submitCoffeemachineValue(){
+function submitCoffeeMachineValue(){
     $.ajax({
     type: 'GET',
     url: '/connect_cfm',
@@ -72,6 +72,6 @@ function submitCoffeemachineValue(){
 
 /*document.getElementById("submitSleepTime()").addEventListener("click", ph_data);
 document.getElementById("submitFridgeValue()").addEventListener("click", get_fridge_data);
-document.getElementById("submitCoffeemachineValue()").addEventListener("click", get_cfm_data);
+document.getElementById("submitCoffeeMachineValue()").addEventListener("click", get_cfm_data);
 document.getElementById("submitPassword()").addEventListener("click", get_sys_data);
 document.getElementById("submitTempState()").addEventListener("click", get_lf_data);*/
