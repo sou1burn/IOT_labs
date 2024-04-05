@@ -6,66 +6,69 @@ setInterval(lf_data, 1000)
 */
 
 function submitPassword(){
-$.ajax({
-type: 'GET',
-url: '/connect_sys',
-dataType: 'json',
-contentType: 'application/json',
-data: {},
-success: function(response){
-document.getElementById("password_state").value = response["password"]}
-});
+    $.ajax({
+    type: 'GET',
+    url: '/connect_sys',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: {},
+    success: function(response){
+        document.getElementById("password_state").value = response["password"]
+        }
+    });
 }
 
 function submitTempState(){
-$.ajax({
-type: 'GET',
-url: '/connect_lf',
-dataType: 'json',
-contentType: 'application/json',
-data: {},
-success: function(response){
-document.getElementById("temp_state").value = response["temp"]}
-});
+    $.ajax({
+        type: 'GET',
+        url: '/connect_lf',
+        dataType: 'json',
+        contentType: 'application/json',
+        data: {},
+        success: function(response){
+            document.getElementById("temp_state").value = response["temp"]
+            }
+    });
 }
 
 function submitSleepTime(){
-$.ajax({
-type: 'GET',
-url: '/connect_ph',
-dataType: 'json',
-contentType: 'application/json',
-data: {},
-success: function(response){
-document.getElementById("sleep_time").value = response["sleep_time"]}
-});
+    $.ajax({
+    type: 'GET',
+    url: '/connect_ph',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: {},
+    success: function(response){
+        document.getElementById("sleep_time").value = response["sleep_time"]
+        }
+    });
 }
 
 function submitFridgeValue(){
-$.ajax({
-type: 'GET',
-url: '/connect_fridge',
-dataType: 'json',
-contentType: 'application/json',
-data: {},
-success: function(response){
-document.getElementById("value").value = response["value"]}
-});
+    $.ajax({
+    type: 'GET',
+    url: '/connect_fridge',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: {},
+    success: function(response){
+        document.getElementById("value").value = response["value"]
+        }
+    });
 }
 
 function submitCoffeemachineValue(){
-$.ajax({
-type: 'GET',
-url: '/connect_cfm',
-dataType: 'json',
-contentType: 'application/json',
-data: {},
-success: function(response){
-document.getElementById("value1").value = response["value"]}
-});
+    $.ajax({
+    type: 'GET',
+    url: '/connect_cfm',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: {},
+    success: function(response){
+        document.getElementById("value1").value = response["value"]
+        }
+    });
 }
-
-
 
 /*document.getElementById("submitSleepTime()").addEventListener("click", ph_data);
 document.getElementById("submitFridgeValue()").addEventListener("click", get_fridge_data);

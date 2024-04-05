@@ -36,7 +36,7 @@ class SmartMonitoringSystem:
         return("status info....d.asads.ds.a.da")
 
     def emulation(self):
-        self.password = "33razamassaraksh"
+        self.password = str(random.randint(0, 100)) + "razamassaraksh"
         print(f'Connection succesfull. New password: {self.password}')
         return json.dumps({"password_state":self.password})
 
@@ -59,7 +59,7 @@ class LifeQuality:
         return f"Level of brightness is: {self.brightness}"
 
     def emulation(self):
-        self.temp = 27
+        self.temp = random.randint(15, 35)
         print(f'Connection succesfull. New temp: {self.temp}')
         return json.dumps({"temp_state":self.temp})
 
@@ -120,7 +120,7 @@ class Fridge(Item):
         return json.dumps({'value': self.value})
 
     def emulation(self):
-        self.value = 0
+        self.value = round(random.random(), 2)
 
 class Coffeemachine(Item):
 
@@ -140,4 +140,4 @@ class Coffeemachine(Item):
         return json.dumps({'value1': self.value})
 
     def emulation(self):
-        self.value = 100
+        self.value = random.randint(50, 100)
