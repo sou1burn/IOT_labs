@@ -1,0 +1,8 @@
+#monitoring_data {
+    text-align: center; /* Центрирование содержимого */
+}
+
+#monitoring_data input {
+    margin: 10px; /* Отступ между полями ввода */
+    display: block; /* Отображение каждого поля ввода в отдельной строке */
+}

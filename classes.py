@@ -76,7 +76,6 @@ class LifeQuality:
         return json.dumps({"temp":f"Temp is changed to {self.temp}"})
 
 
-
 class Item(abc.ABC):
 
     def __init__(self, name):
@@ -126,10 +125,12 @@ class Fridge(Item):
         self.full_state = curr_full_state
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
+
     def connect(self, request):
         self.full_state = request.args.get("fridge_full_state", '')
         print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
         return json.dumps({"full_state":f"Full state fridge was changed to {self.full_state}"})
+
 
     def emulation(self):
         self.value = round(random.random(), 2)
