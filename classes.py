@@ -1,6 +1,7 @@
 import abc
 import json
 import random
+# from flask import request
 
 class SmartMonitoringSystem:
     def __init__(self, user, password):
@@ -40,11 +41,17 @@ class SmartMonitoringSystem:
         print(f'Connection succesfull. New password: {self.password}')
         return json.dumps({"password_state":self.password})
 
+    def change_password(self, request):
+        self.password = request.args.get('password_state', '')
+        print(f"Connection (change pass) for user {self.user} success, NEW PASSWORD is '{self.password}'")
+        return json.dumps({"password":"password is changed"})
 
 class LifeQuality:
 
-    def __init__(self, air_humidity = 50, temp = 20, brightness = 40):
-        print(f"Mean values of parameters are: air humidity: {air_humidity}, temperature: {temp}, brightness: {brightness}")
+    def __init__(self, name, air_humidity = 50, temp = 20, brightness = 40):
+        self.name_room = name
+        self.power = "on"
+        print(f"For room {self.name_room} mean values of parameters are: air humidity: {air_humidity}, temperature: {temp}, brightness: {brightness}")
 
     def get_humidity(self, curr_humidity):
         self.air_humidity = curr_humidity
@@ -60,9 +67,13 @@ class LifeQuality:
 
     def emulation(self):
         self.temp = random.randint(15, 35)
-        print(f'Connection succesfull. New temp: {self.temp}')
+        print(f'Connection successfull. New temp: {self.temp}')
         return json.dumps({"temp_state":self.temp})
 
+    def change_temp(self, request):  # For 4s LAB
+        self.temp = request.args.get('temp_state', '')
+        print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
+        return json.dumps({"temp":f"Temp is changed to {self.temp}"})
 
 
 
@@ -94,38 +105,40 @@ class PersonalHealthcare(Item):
         self.activity = curr_activity
         return f"Your current activity is: {self.activity}"
 
-    def connect(self, source):
+    def connect(self, request):
         super().connect()
-        self.emulation()
-        print("connection to " + source + "has started")
-        return json.dumps({'sleep_time':self.sleep_time})
+        self.sleep_time = request.args.get("sleep_time", '')
+        print(f"Connection to {self.name} success, new sleep_time is '{self.sleep_time}'")
+        return json.dumps({'time':f"New sleep time is {self.sleep_time}"})
 
     def emulation(self):
         self.sleep_time = random.randint(2, 5)
 
 class Fridge(Item):
 
-    def __init__(self, name, value = 50):
+    def __init__(self, name, curr_full_state = 50):
         super().__init__(name)
+        self.full_state = curr_full_state
         self.unit = "%"
-        print(f"Fridge {self.name} is created, indication is {value} {self.unit}")
+        print(f"Fridge {self.name} is created, indication is {self.full_state} {self.unit}")
 
-    def get_current_fridge_count(self, curr_value):
-        self.value = curr_value
+    def get_current_fridge_count(self, curr_full_state):
+        self.full_state = curr_full_state
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
-    def connect(self, source):
-        self.emulation()
-        print("connection to " + source + " has started")
-        return json.dumps({'value': self.value})
+    def connect(self, request):
+        self.full_state = request.args.get("fridge_full_state", '')
+        print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
+        return json.dumps({"full_state":f"Full state fridge was changed to {self.full_state}"})
 
     def emulation(self):
         self.value = round(random.random(), 2)
 
-class Coffeemachine(Item):
+class CoffeeMachine(Item):
 
     def __init__(self, name, value = 50):
         super().__init__(name)
+        self.value = value
         self.unit = "%"
         print(f"Coffeemachine {self.name} is created, indication of bean level is {value} {self.unit}")
 
@@ -133,11 +146,11 @@ class Coffeemachine(Item):
         self.value = curr_value
         return(f"Coffeemachine {self.name} current indication of beans is {self.value} {self.unit}")
 
-    def connect(self, source):
+    def connect(self, request):
         super().connect()
-        self.emulation()
-        print("connection to " + source + "has started")
-        return json.dumps({'value1': self.value})
+        self.value = request.args.get("coffee_value", '')
+        print(f"connection to {self.name} has started")
+        return json.dumps({'value': f"New value for coffee: {self.value}{self.unit}"})
 
     def emulation(self):
         self.value = random.randint(50, 100)
