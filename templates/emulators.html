@@ -1,33 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Smart Monitoring System</title>
-<link rel="stylesheet" type="text/css" href="C:/Users/spike/PycharmProjects/staj/templates/styles.css">
-<script src="http://code.jquery.com/jquery-3.3.1.js"></script>
-<script src="C:/Users/spike/PycharmProjects/staj/index.js"></script>
+    <meta charset="UTF-8">
+    <title>Smart Monitoring System</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+    <script src="http://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="/static/index.js"></script>
 </head>
 <body>
 <div id="monitoring_data">
-<label>Система</label><br>
-<input type="text" id="password" placeholder="Новый пароль">
-<button onclick="submitPassword()">Отправить</button><br>
+    <label>Система</label><br>
+    <input type="text" id="password_state" placeholder="Новый пароль">
+    <button onclick="submitPassword()">Отправить</button>
+    <br>
 
-<label>Качество жизни</label><br>
-<input type="text" id="temp_state" placeholder="Значение температуры">
-<button onclick="submitTempState()">Отправить</button><br>
+    <label>Качество жизни</label><br>
+    <input type="text" id="temp_state" placeholder="Значение температуры">
+    <button onclick="submitTempState()">Отправить</button>
+    <br>
 
-<label>Умные часы</label><br>
-<input type="text" id="sleep_time" placeholder="Значение для сна">
-<button onclick="submitSleepTime()">Отправить</button><br>
+    <label>Умные часы</label><br>
+    <input type="text" id="sleep_time" placeholder="Значение для сна">
+    <button onclick="submitSleepTime()">Отправить</button>
+    <br>
 
-<label>Трыц тыц холодильник</label><br>
-<input type="text" id="value" placeholder="Значение для холодильника">
-<button onclick="submitFridgeValue()">Отправить</button><br>
+    <label>Трыц тыц холодильник</label><br>
+    <input type="text" id="fridge_full_state" placeholder="Значение для холодильника">
+    <button onclick="submitFridgeValue()">Отправить</button>
+    <br>
 
-<label>Кофемашинка</label><br>
-<input type="text" id="value1" placeholder="Значение для кофемашины">
-<button onclick="submitCoffeemachineValue()">Отправить</button><br>
+    <label>Кофемашинка</label><br>
+    <input type="text" id="coffee_value" placeholder="Значение для кофемашины">
+    <button onclick="submitCoffeeMachineValue()">Отправить</button>
+    <br>
 </div>
+
 </body>
 </html>

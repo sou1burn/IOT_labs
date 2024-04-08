@@ -1,33 +1,42 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 import classes
 
 
 app = Flask(__name__)
 pers_health1 = classes.PersonalHealthcare("smart watch")
-fridge1 = classes.Fridge("vigilante")
-coffeemachine1 = classes.Coffeemachine("six-four-blank")
+fridge1 = classes.Fridge("frigid")
+CoffeeMachine1 = classes.CoffeeMachine("pupupu")
 smart_sys = classes.SmartMonitoringSystem("papa", "std")
-lf = classes.LifeQuality()
+room1 = classes.LifeQuality("bedroom")
 
-@app.route('/connect_ph')
+
+@app.route('/change_password')
+def change_password():
+    return smart_sys.change_password(request)
+
+@app.route('/LQ_change_temp')
+def LQ_change_temp():
+    return room1.change_temp(request)
+
+
+@app.route('/connect_phc')
 def connect_ph():
-    return pers_health1.connect()
+
+    return pers_health1.connect(request)
+
+
 
 
 @app.route('/connect_fridge')
 def connect_fridge():
-    return fridge1.connect()
-#aaaaa
+
+    return fridge1.connect(request)
+
+
 @app.route('/connect_cfm')
 def connect_cfm():
-    return coffeemachine1.connect()
-@app.route('/connect_sys')
-def connect_sys():
-    return smart_sys.emulation()
+    return CoffeeMachine1.connect(request)
 
-@app.route('/connect_lf')
-def connect_lf():
-    return lf.emulation()
 
 @app.route('/')
 def main():
@@ -39,3 +48,4 @@ def main():
 
 if __name__ == "__main__":
     app.run("0.0.0.0", port=5000)
+
