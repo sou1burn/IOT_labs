@@ -1,7 +1,8 @@
 import abc
 import json
 import random
-# from flask import request
+import re
+
 
 class SmartMonitoringSystem:
     def __init__(self, user, password):
@@ -42,9 +43,20 @@ class SmartMonitoringSystem:
         return json.dumps({"password_state":self.password})
 
     def change_password(self, request):
-        self.password = request.args.get('password_state', '')
-        print(f"Connection (change pass) for user {self.user} success, NEW PASSWORD is '{self.password}'")
-        return json.dumps({"password":"password is changed"})
+        # Проверяет наличие символов в обоих регистрах,
+        # чисел, спецсимволов и минимальную длину 8 символов
+        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$'
+
+        try:
+            if re.match(pattern, request.args.get('password_state', '')) is None:
+                raise Exception("Not correct password. Требования: минимальная длина 8, спецсимволы, оба регистра")
+
+            self.password = request.args.get('password_state', '')
+            print(f"Connection (change pass) for user {self.user} success, NEW PASSWORD is '{self.password}'")
+            return json.dumps({"password":"password is changed"})
+        except Exception as e:
+            print(f"Connection (change pass) for user {self.user} FAILED:\n", e)
+            return json.dumps({"password":str(e)})
 
 class LifeQuality:
 
@@ -71,9 +83,14 @@ class LifeQuality:
         return json.dumps({"temp_state":self.temp})
 
     def change_temp(self, request):  # For 4s LAB
-        self.temp = request.args.get('temp_state', '')
-        print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
-        return json.dumps({"temp":f"Temp is changed to {self.temp}"})
+        try:
+            int(request.args.get('temp_state', ''))
+            self.temp = request.args.get('temp_state', '')
+            print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
+            return json.dumps({"temp":f"Temp is changed to {self.temp}"})
+        except:
+            print(f"New value has not accept, need int, but given {type(request.args.get('temp_state', ''))}")
+            return json.dumps({"temp": f"Temp is not changed, need integer"})
 
 
 class Item(abc.ABC):
@@ -106,10 +123,14 @@ class PersonalHealthcare(Item):
 
     def connect(self, request):
         super().connect()
-        self.sleep_time = request.args.get("sleep_time", '')
-        print(f"Connection to {self.name} success, new sleep_time is '{self.sleep_time}'")
-        return json.dumps({'time':f"New sleep time is {self.sleep_time}"})
-
+        try:
+            float(request.args.get("sleep_time", ''))
+            self.sleep_time = request.args.get("sleep_time", '')
+            print(f"Connection to {self.name} success, new sleep_time is '{self.sleep_time}'")
+            return json.dumps({'time':f"New sleep time is {self.sleep_time}"})
+        except:
+            print(f"Need float, but given {type(request.args.get('sleep_time', ''))}")
+            return json.dumps({'time': f"New sleep time not changed, need <float> type"})
     def emulation(self):
         self.sleep_time = random.randint(2, 5)
 
@@ -125,12 +146,15 @@ class Fridge(Item):
         self.full_state = curr_full_state
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
-
     def connect(self, request):
-        self.full_state = request.args.get("fridge_full_state", '')
-        print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
-        return json.dumps({"full_state":f"Full state fridge was changed to {self.full_state}"})
-
+        try:
+            float(request.args.get("fridge_full_state", ''))
+            self.full_state = request.args.get("fridge_full_state", '')
+            print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
+            return json.dumps({"full_state":f"Full state fridge was changed to {self.full_state}"})
+        except:
+            print(f"Need float, but given {type(request.args.get('fridge_full_state', ''))}")
+            return json.dumps({"full_state": "Full state fridge not was changed"})
 
     def emulation(self):
         self.value = round(random.random(), 2)
@@ -149,9 +173,13 @@ class CoffeeMachine(Item):
 
     def connect(self, request):
         super().connect()
-        self.value = request.args.get("coffee_value", '')
-        print(f"connection to {self.name} has started")
-        return json.dumps({'value': f"New value for coffee: {self.value}{self.unit}"})
-
+        try:
+            float(request.args.get("coffee_value", ''))
+            self.value = request.args.get("coffee_value", '')
+            print(f"connection to {self.name} has started")
+            return json.dumps({'value': f"New value for coffee: {self.value}{self.unit}"})
+        except:
+            print("New value for coffee was not update")
+            return json.dumps({'value':"New value for coffee was not update"})
     def emulation(self):
         self.value = random.randint(50, 100)

@@ -21,22 +21,17 @@ def LQ_change_temp():
 
 @app.route('/connect_phc')
 def connect_ph():
-
     return pers_health1.connect(request)
-
-
 
 
 @app.route('/connect_fridge')
 def connect_fridge():
-
     return fridge1.connect(request)
 
 
 @app.route('/connect_cfm')
 def connect_cfm():
     return CoffeeMachine1.connect(request)
-
 
 @app.route('/')
 def main():
@@ -48,4 +43,3 @@ def main():
 
 if __name__ == "__main__":
     app.run("0.0.0.0", port=5000)
-
