@@ -2,6 +2,8 @@ import abc
 import json
 import random
 import re
+import pymongo
+import datetime
 
 
 class SmartMonitoringSystem:
@@ -45,7 +47,7 @@ class SmartMonitoringSystem:
     def change_password(self, request):
         # Проверяет наличие символов в обоих регистрах,
         # чисел, спецсимволов и минимальную длину 8 символов
-        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$'
+        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&__]{8,}$'
 
         try:
             if re.match(pattern, request.args.get('password_state', '')) is None:
@@ -210,3 +212,54 @@ class CoffeeMachine(Item):
         value = int(self.value)
         self.refill = "Need a refill" if value < 20  else "Ok"
         return self.refill
+
+class Logger:
+    def __init__(self, db_name):
+        self.current_temperature = []
+        self.current_fridge_state = []
+        self.passwords = []
+        self.coffee_beans = []
+        self.sleep_time = []
+        self.client = pymongo.MongoClient('mongodb://localhost:27017/')
+        self.db = self.client[db_name]
+    def insert_temperature(self, new_data):
+         if new_data not in self.current_temperature:
+             self.current_temperature.append(new_data)
+             return self.db['Temperature'].insert_one({'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                          'Temperature': new_data})
+         print('Value has not changed')
+
+    def insert_fridge_state(self, new_data):
+        if new_data not in self.current_fridge_state:
+            self.current_fridge_state.append(new_data)
+            return self.db['Fridge state'].insert_one(
+                {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                 'Fridge state': new_data})
+
+        print('Value has not changed')
+
+
+    def insert_password(self, new_data):
+        if new_data not in self.passwords:
+            self.passwords.append(new_data)
+            return self.db['Password'].insert_one(
+            {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"New Password": new_data})
+
+        print('Value has not changed')
+
+    def insert_coffee_beans(self, new_data):
+        if new_data not in self.coffee_beans:
+            self.coffee_beans.append(new_data)
+            return self.db['Coffee beans'].insert_one(
+                {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "New beans count": new_data})
+
+        print('Value has not changed')
+
+
+    def insert_sleep_time(self, new_data):
+        if new_data not in self.sleep_time:
+            self.sleep_time.append(new_data)
+            return self.db['Sleep time'].insert_one(
+                {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "New sleep time": new_data})
+
+        print('Value has not changed')
