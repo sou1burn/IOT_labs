@@ -9,7 +9,7 @@ CoffeeMachine1 = classes.CoffeeMachine("pupupu")
 smart_sys = classes.SmartMonitoringSystem("papa", "std")
 room1 = classes.LifeQuality("bedroom")
 
-
+#blyat
 @app.route('/change_password')
 def change_password():
     return smart_sys.change_password(request)
