@@ -69,21 +69,22 @@ function submitCoffeeMachineValue(){
     },
     success: function(response){
         document.getElementById("coffee_value").value = response["value"]
-        updateCoffeeMachineStatus(response)
+        updateCoffeeMachineStatus(response, document.getElementById("coffee_value").value)
         }
     });
 }
-function updateCoffeeMachineStatus(response) {
+function updateCoffeeMachineStatus(response, coffee_value) {
  $.ajax({
     type: 'GET',
     url: '/connect_cfm',
     dataType: 'json',
     contentType: 'application/json',
     data: {
-    "Refill":document.getElementById("Refill").value
-    },
+            "Refill": response["Refill"],
+            "coffee_value": coffee_value
+        },
     success: function(response){
-        document.getElementById("Refill").innerHTML = response["Refill"]
+        document.getElementById("Refill").value = response["Refill"]
     }
     });
 }

@@ -34,8 +34,7 @@ def connect_fridge():
 
 @app.route('/connect_cfm')
 def connect_cfm():
-    refill = request.args.get("Refill", "")
-    return CoffeeMachine1.connect(request, refill)
+    return CoffeeMachine1.connect(request, CoffeeMachine1.needs_refill(CoffeeMachine1.value))
 
 @app.route('/')
 def main():

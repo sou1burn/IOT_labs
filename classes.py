@@ -192,16 +192,18 @@ class CoffeeMachine(Item):
     def connect(self, request, refill):
         super().connect()
         try:
-            coffee_value = float(request.args.get("coffee_value", ''))
+            self.value = request.args.get("coffee_value", '')
+            self.refill = request.args.get("Refill", '')
             print(f"connection to {self.name} has started")
-            return json.dumps({'value': f"New value for coffee: {coffee_value}{self.unit}", 'Refill':f"New status: {refill}"})
+            return json.dumps({'value': self.value, 'Refill': refill })
         except:
+            print("New value for coffee was not update")
             return json.dumps({'value':"New value for coffee was not updated", "Refill": "smth broke.."})
 
     def emulation(self):
         self.value = random.randint(50, 100)
 
     def needs_refill(self, value):
-        value = int(value)
-        self.refill = "Need a refill" if value < 20 else "Ok"
+        value = int(self.value)
+        self.refill = "Need a refill" if value < 20  else "Ok"
         return self.refill
