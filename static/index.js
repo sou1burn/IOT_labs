@@ -121,6 +121,7 @@ function submitCoffeeMachineValue(){
     success: function(response){
         document.getElementById("coffee_value").value = response["value"]
         updateCoffeeMachineStatus(response, document.getElementById("coffee_value").value)
+        update_median_beans(response, document.getElementById("coffee_value").value)
         }
     });
 }
@@ -141,3 +142,18 @@ function updateCoffeeMachineStatus(response, coffee_value) {
     });
 }
 
+function update_median_beans(response, coffee_value) {
+ $.ajax({
+    type: 'GET',
+    url: '/connect_cfm',
+    dataType: 'json',
+    contentType: 'application/json',
+    data: {
+            "beans_median": response["beans_median"],
+            "coffee_value": coffee_value
+        },
+    success: function(response){
+        document.getElementById("beans_median").value = response["beans_median"]
+    }
+    });
+}

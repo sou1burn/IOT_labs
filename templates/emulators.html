@@ -19,6 +19,10 @@
     <button onclick="submitTempState()">Отправить</button>
     <br>
 
+    <label>Средняя температура</label><br>
+    <input type="text" id="avg_t" placeholder="Значение" disabled>
+    <br>
+
     <label>Кондиционер</label><br>
     <input type="text" id="conditioner_state" placeholder="Статус" disabled>
     <br>
@@ -26,6 +30,14 @@
     <label>Умные часы</label><br>
     <input type="text" id="sleep_time" placeholder="Значение для сна">
     <button onclick="submitSleepTime()">Отправить</button>
+    <br>
+
+    <label>Среднее количество часов сна</label><br>
+    <input type="text" id="avg_sleep" placeholder="Значение" disabled>
+    <br>
+
+    <label>Максимальное количество часов сна</label><br>
+    <input type="text" id="max_sleep" placeholder="Значение" disabled>
     <br>
 
     <label>Пора ли спать?</label><br>
@@ -36,7 +48,9 @@
     <input type="text" id="fridge_full_state" placeholder="Значение для холодильника">
     <button onclick="submitFridgeValue()">Отправить</button>
     <br>
-
+    <label>Минимальное состояние холодильника</label><br>
+    <input type="text" id="fridge_min" placeholder="Статус" disabled>
+    <br>
     <label>Мощность холодильника</label><br>
     <input type="text" id="fridge_power" placeholder="Статус" disabled>
     <br>
@@ -44,6 +58,10 @@
     <label>Кофемашинка</label><br>
     <input type="text" id="coffee_value" placeholder="Значение для кофемашины">
     <button onclick="submitCoffeeMachineValue()">Отправить</button>
+    <br>
+
+    <label>Медиана количества зерен</label><br>
+    <input type="text" id="beans_median" placeholder="Статус" disabled >
     <br>
 
     <label>Пополнение кофемашины</label><br>

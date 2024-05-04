@@ -25,7 +25,7 @@ def LQ_change_temp():
 @app.route('/connect_phc')
 def connect_ph():
     logger.insert_sleep_time(pers_health1.sleep_time)
-    return pers_health1.connect(request, pers_health1.goto_sleep( pers_health1.sleep_time))
+    return pers_health1.connect(request, pers_health1.goto_sleep(pers_health1.sleep_time))
 
 
 @app.route('/connect_fridge')
@@ -37,7 +37,8 @@ def connect_fridge():
 @app.route('/connect_cfm')
 def connect_cfm():
     logger.insert_coffee_beans(CoffeeMachine1.value)
-    return CoffeeMachine1.connect(request, CoffeeMachine1.needs_refill(CoffeeMachine1.value))
+    median = logger.median_beans()
+    return CoffeeMachine1.connect(request, CoffeeMachine1.needs_refill(CoffeeMachine1.value), median )
 
 @app.route('/')
 def main():
