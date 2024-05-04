@@ -16,22 +16,26 @@ def change_password():
 
 @app.route('/LQ_change_temp')
 def LQ_change_temp():
+    room1.switch_conditioner(room1.temp)
     return room1.change_temp(request)
 
 
 @app.route('/connect_phc')
 def connect_ph():
+    pers_health1.call_an_ambulance(pers_health1.pulse, pers_health1.sleep_time)
     return pers_health1.connect(request)
 
 
 @app.route('/connect_fridge')
 def connect_fridge():
+    fridge1.state_change(fridge1.full_state)
     return fridge1.connect(request)
 
 
 @app.route('/connect_cfm')
 def connect_cfm():
-    return CoffeeMachine1.connect(request)
+    refill = request.args.get("Refill", "")
+    return CoffeeMachine1.connect(request, refill)
 
 @app.route('/')
 def main():

@@ -91,6 +91,10 @@ class LifeQuality:
         except:
             print(f"New value has not accept, need int, but given {type(request.args.get('temp_state', ''))}")
             return json.dumps({"temp": f"Temp is not changed, need integer"})
+        return  {"level of brightness:" : self.level}
+
+    def switch_conditioner(self, brightness):
+        self.level = 25 if temp < 15  else 22
 
 
 class Item(abc.ABC):
@@ -107,7 +111,9 @@ class PersonalHealthcare(Item):
 
     def __init__(self, name,  pulse = 90, sleep_time = 8, activity = 10000):
         super().__init__(name)
+        self.sleep_time = sleep_time
         print(f"Your trackers say that you need {sleep_time} hours of sleep, {activity} in a day and pulse around {pulse} times per minute")
+        self.state = "Ok"
 
     def get_current_pulse(self, curr_pulse):
         self.pulse = curr_pulse
@@ -131,14 +137,20 @@ class PersonalHealthcare(Item):
         except:
             print(f"Need float, but given {type(request.args.get('sleep_time', ''))}")
             return json.dumps({'time': f"New sleep time not changed, need <float> type"})
+        return {"State of user: " : self.state}
+
     def emulation(self):
         self.sleep_time = random.randint(2, 5)
+
+    def call_an_ambulance(self, pulse, sleep_time):
+        self.state = "Call 103!!" if sleep_time < 4 and pulse > 180 else "Ok"
 
 class Fridge(Item):
 
     def __init__(self, name, curr_full_state = 50):
         super().__init__(name)
         self.full_state = curr_full_state
+        self.power = 50
         self.unit = "%"
         print(f"Fridge {self.name} is created, indication is {self.full_state} {self.unit}")
 
@@ -156,14 +168,20 @@ class Fridge(Item):
             print(f"Need float, but given {type(request.args.get('fridge_full_state', ''))}")
             return json.dumps({"full_state": "Full state fridge not was changed"})
 
+        return ({"Power of fridge: ": self.power})
+
     def emulation(self):
         self.value = round(random.random(), 2)
+
+    def state_change(self, full_state):
+        self.power = 50 if full_state < 30 else 100
 
 class CoffeeMachine(Item):
 
     def __init__(self, name, value = 50):
         super().__init__(name)
         self.value = value
+        self.refill = ""
         self.unit = "%"
         print(f"Coffeemachine {self.name} is created, indication of bean level is {value} {self.unit}")
 
@@ -171,15 +189,19 @@ class CoffeeMachine(Item):
         self.value = curr_value
         return(f"Coffeemachine {self.name} current indication of beans is {self.value} {self.unit}")
 
-    def connect(self, request):
+    def connect(self, request, refill):
         super().connect()
         try:
-            float(request.args.get("coffee_value", ''))
-            self.value = request.args.get("coffee_value", '')
+            coffee_value = float(request.args.get("coffee_value", ''))
             print(f"connection to {self.name} has started")
-            return json.dumps({'value': f"New value for coffee: {self.value}{self.unit}"})
+            return json.dumps({'value': f"New value for coffee: {coffee_value}{self.unit}", 'Refill':f"New status: {refill}"})
         except:
-            print("New value for coffee was not update")
-            return json.dumps({'value':"New value for coffee was not update"})
+            return json.dumps({'value':"New value for coffee was not updated", "Refill": "smth broke.."})
+
     def emulation(self):
         self.value = random.randint(50, 100)
+
+    def needs_refill(self, value):
+        value = int(value)
+        self.refill = "Need a refill" if value < 20 else "Ok"
+        return self.refill
