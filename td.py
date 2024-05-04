@@ -16,20 +16,17 @@ def change_password():
 
 @app.route('/LQ_change_temp')
 def LQ_change_temp():
-    room1.switch_conditioner(room1.temp)
-    return room1.change_temp(request)
+    return room1.change_temp(request, room1.switch_conditioner(room1.temp))
 
 
 @app.route('/connect_phc')
 def connect_ph():
-    pers_health1.call_an_ambulance(pers_health1.pulse, pers_health1.sleep_time)
-    return pers_health1.connect(request)
+    return pers_health1.connect(request, pers_health1.goto_sleep( pers_health1.sleep_time))
 
 
 @app.route('/connect_fridge')
 def connect_fridge():
-    fridge1.state_change(fridge1.full_state)
-    return fridge1.connect(request)
+    return fridge1.connect(request, fridge1.state_change(fridge1.full_state))
 
 
 @app.route('/connect_cfm')

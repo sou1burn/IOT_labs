@@ -62,6 +62,7 @@ class LifeQuality:
 
     def __init__(self, name, air_humidity = 50, temp = 20, brightness = 40):
         self.name_room = name
+        self.temp = temp
         self.power = "on"
         print(f"For room {self.name_room} mean values of parameters are: air humidity: {air_humidity}, temperature: {temp}, brightness: {brightness}")
 
@@ -82,19 +83,20 @@ class LifeQuality:
         print(f'Connection successfull. New temp: {self.temp}')
         return json.dumps({"temp_state":self.temp})
 
-    def change_temp(self, request):  # For 4s LAB
+    def change_temp(self, request, tmp):  # For 4s LAB
         try:
             int(request.args.get('temp_state', ''))
             self.temp = request.args.get('temp_state', '')
             print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
-            return json.dumps({"temp":f"Temp is changed to {self.temp}"})
+            return json.dumps({"temp":self.temp, "conditioner_state" : tmp})
         except:
             print(f"New value has not accept, need int, but given {type(request.args.get('temp_state', ''))}")
             return json.dumps({"temp": f"Temp is not changed, need integer"})
         return  {"level of brightness:" : self.level}
 
-    def switch_conditioner(self, brightness):
-        self.level = 25 if temp < 15  else 22
+    def switch_conditioner(self, temp):
+        self.level = 25 if int(temp) < 12  else 22
+        return self.level
 
 
 class Item(abc.ABC):
@@ -127,23 +129,23 @@ class PersonalHealthcare(Item):
         self.activity = curr_activity
         return f"Your current activity is: {self.activity}"
 
-    def connect(self, request):
+    def connect(self, request, timer):
         super().connect()
         try:
-            float(request.args.get("sleep_time", ''))
-            self.sleep_time = request.args.get("sleep_time", '')
+            self.sleep_time = float(request.args.get("sleep_time", ''))
             print(f"Connection to {self.name} success, new sleep_time is '{self.sleep_time}'")
-            return json.dumps({'time':f"New sleep time is {self.sleep_time}"})
+            return json.dumps({'time': self.sleep_time, 'sleep_power': timer})
         except:
             print(f"Need float, but given {type(request.args.get('sleep_time', ''))}")
             return json.dumps({'time': f"New sleep time not changed, need <float> type"})
-        return {"State of user: " : self.state}
+
 
     def emulation(self):
         self.sleep_time = random.randint(2, 5)
 
-    def call_an_ambulance(self, pulse, sleep_time):
-        self.state = "Call 103!!" if sleep_time < 4 and pulse > 180 else "Ok"
+    def goto_sleep(self, sleep_time):
+        self.state = "Срочно ложитесь спать!!" if int(sleep_time) < 3 else "Ok"
+        return self.state
 
 class Fridge(Item):
 
@@ -158,12 +160,12 @@ class Fridge(Item):
         self.full_state = curr_full_state
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
-    def connect(self, request):
+    def connect(self, request, power):
         try:
             float(request.args.get("fridge_full_state", ''))
             self.full_state = request.args.get("fridge_full_state", '')
             print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
-            return json.dumps({"full_state":f"Full state fridge was changed to {self.full_state}"})
+            return json.dumps({"full_state": self.full_state, "fridge_power" : power})
         except:
             print(f"Need float, but given {type(request.args.get('fridge_full_state', ''))}")
             return json.dumps({"full_state": "Full state fridge not was changed"})
@@ -174,7 +176,8 @@ class Fridge(Item):
         self.value = round(random.random(), 2)
 
     def state_change(self, full_state):
-        self.power = 50 if full_state < 30 else 100
+        self.power = 50 if int(full_state) < 30 else 100
+        return self.power
 
 class CoffeeMachine(Item):
 
