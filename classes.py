@@ -85,13 +85,12 @@ class LifeQuality:
         print(f'Connection successfull. New temp: {self.temp}')
         return json.dumps({"temp_state":self.temp})
 
-    def change_temp(self, request, tmp):  # For 4s LAB
+    def change_temp(self, request, tmp, avg_temp):  # For 4s LAB
         try:
             int(request.args.get('temp_state', ''))
             self.temp = request.args.get('temp_state', '')
-            avg_temp = Logger.avg_temp()
             print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
-            return json.dumps({"temp": int(self.temp), "conditioner_state" : int(tmp), "avg_t" : float(avg_temp)})
+            return json.dumps({"temp": int(self.temp), "conditioner_state" : int(tmp), "avg_temp" : float(avg_temp)})
         except:
             print(f"New value has not accept, need int, but given {type(request.args.get('temp_state', ''))}")
             return json.dumps({"temp": f"Temp is not changed, need integer"})
@@ -132,11 +131,10 @@ class PersonalHealthcare(Item):
         self.activity = curr_activity
         return f"Your current activity is: {self.activity}"
 
-    def connect(self, request, timer):
+    def connect(self, request, timer, avg_sleep, max_sleep):
         super().connect()
         try:
             self.sleep_time = float(request.args.get("sleep_time", ''))
-            avg_sleep, max_sleep = Logger.avg_sleep(), Logger.max_sleep()
             print(f"Connection to {self.name} success, new sleep_time is '{self.sleep_time}'")
             return json.dumps({'time': int(self.sleep_time), 'sleep_power': timer, 'avg_sleep' : float(avg_sleep), 'max_sleep' : int(max_sleep)})
         except:
@@ -164,11 +162,10 @@ class Fridge(Item):
         self.full_state = curr_full_state
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
-    def connect(self, request, power):
+    def connect(self, request, power, min_fridge):
         try:
             float(request.args.get("fridge_full_state", ''))
             self.full_state = request.args.get("fridge_full_state", '')
-            min_fridge = int(Logger.min_fridge_state())
             print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
             return json.dumps({"full_state": int(self.full_state), "fridge_power" : int(power), "fridge_min" : int(min_fridge)})
         except:
@@ -186,7 +183,7 @@ class Fridge(Item):
 
 class CoffeeMachine(Item):
 
-    def __init__(self, name, value = 50):
+    def __init__(self, name, value = 30):
         super().__init__(name)
         self.value = value
         self.refill = ""
@@ -226,14 +223,14 @@ class Logger:
         self.client = pymongo.MongoClient('mongodb://localhost:27017/')
         self.db = self.client[db_name]
     def insert_temperature(self, new_data):
-         if new_data not in self.current_temperature:
+         if new_data != self.current_temperature:
              self.current_temperature.append(int(new_data))
              return self.db['Temperature'].insert_one({'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                                                           'Temperature': int(new_data)})
          print('Value has not changed')
 
     def insert_fridge_state(self, new_data):
-        if new_data not in self.current_fridge_state:
+        if new_data != self.current_fridge_state:
             self.current_fridge_state.append(int(new_data))
             return self.db['Fridge state'].insert_one(
                 {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -243,7 +240,7 @@ class Logger:
 
 
     def insert_password(self, new_data):
-        if new_data not in self.passwords:
+        if new_data != self.passwords:
             self.passwords.append(int(new_data))
             return self.db['Password'].insert_one(
             {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"New Password": int(new_data)})
@@ -251,7 +248,7 @@ class Logger:
         print('Value has not changed')
 
     def insert_coffee_beans(self, new_data):
-        if new_data not in self.coffee_beans:
+        if new_data != self.coffee_beans:
             self.coffee_beans.append(int(new_data))
             print(type(new_data))
             return self.db['Coffee beans'].insert_one(
@@ -260,7 +257,7 @@ class Logger:
 
 
     def insert_sleep_time(self, new_data):
-        if new_data not in self.sleep_time:
+        if new_data != self.sleep_time:
             self.sleep_time.append(int(new_data))
             return self.db['Sleep time'].insert_one(
                 {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "New sleep time": int(new_data)})
@@ -274,6 +271,7 @@ class Logger:
             temp_data.append(int(elem['Temperature']))
         if temp_data:
             return round(np.mean(temp_data), 1)
+        return 11
 
     def avg_sleep(self):
         cursor = self.db['Sleep time'].find()
@@ -298,10 +296,10 @@ class Logger:
         return min(temp_data)
 
     def median_beans(self):
-        cursor = self.db['New beans count'].find()
+        cursor = self.db['Coffee beans'].find()
         temp_data = []
         for elem in cursor:
             temp_data.append(int(elem['New beans count']))
-            print(type(elem['New beans count']))
         if temp_data:
             return np.median(temp_data)
+        return 10

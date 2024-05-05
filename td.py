@@ -10,7 +10,7 @@ smart_sys = classes.SmartMonitoringSystem("papa", "std")
 room1 = classes.LifeQuality("bedroom")
 logger = classes.Logger("IOT_log_db")
 
-#blyat
+
 @app.route('/change_password')
 def change_password():
     logger.insert_password(smart_sys.password)
@@ -19,19 +19,22 @@ def change_password():
 @app.route('/LQ_change_temp')
 def LQ_change_temp():
     logger.insert_temperature(room1.temp)
-    return room1.change_temp(request, room1.switch_conditioner(room1.temp))
+    avg_temp = logger.avg_temp()
+    return room1.change_temp(request, room1.switch_conditioner(room1.temp), avg_temp)
 
 
 @app.route('/connect_phc')
 def connect_ph():
     logger.insert_sleep_time(pers_health1.sleep_time)
-    return pers_health1.connect(request, pers_health1.goto_sleep(pers_health1.sleep_time))
+    avg_sleep, max_sleep = logger.avg_sleep(), logger.max_sleep()
+    return pers_health1.connect(request, pers_health1.goto_sleep(pers_health1.sleep_time), avg_sleep, max_sleep)
 
 
 @app.route('/connect_fridge')
 def connect_fridge():
     logger.insert_fridge_state(fridge1.full_state)
-    return fridge1.connect(request, fridge1.state_change(fridge1.full_state))
+    min_fr = logger.min_fridge_state()
+    return fridge1.connect(request, fridge1.state_change(fridge1.full_state), min_fr)
 
 
 @app.route('/connect_cfm')
