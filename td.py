@@ -4,6 +4,7 @@ import classes
 
 app = Flask(__name__)
 pers_health1 = classes.PersonalHealthcare("smart watch")
+
 fridge1 = classes.Fridge("frigid")
 CoffeeMachine1 = classes.CoffeeMachine("pupupu")
 smart_sys = classes.SmartMonitoringSystem("papa", "std")
@@ -11,23 +12,29 @@ room1 = classes.LifeQuality("bedroom")
 logger = classes.Logger("IOT_log_db")
 
 
+
 @app.route('/change_password')
 def change_password():
     logger.insert_password(smart_sys.password)
+
     return smart_sys.change_password(request)
 
 @app.route('/LQ_change_temp')
 def LQ_change_temp():
+
     logger.insert_temperature(room1.temp)
     avg_temp = logger.avg_temp()
     return room1.change_temp(request, room1.switch_conditioner(room1.temp), avg_temp)
 
 
+
 @app.route('/connect_phc')
 def connect_ph():
+
     logger.insert_sleep_time(pers_health1.sleep_time)
     avg_sleep, max_sleep = logger.avg_sleep(), logger.max_sleep()
     return pers_health1.connect(request, pers_health1.goto_sleep(pers_health1.sleep_time), avg_sleep, max_sleep)
+
 
 
 @app.route('/connect_fridge')
@@ -37,11 +44,14 @@ def connect_fridge():
     return fridge1.connect(request, fridge1.state_change(fridge1.full_state), min_fr)
 
 
+
 @app.route('/connect_cfm')
 def connect_cfm():
+
     logger.insert_coffee_beans(CoffeeMachine1.value)
     median = logger.median_beans()
     return CoffeeMachine1.connect(request, CoffeeMachine1.needs_refill(CoffeeMachine1.value), median )
+
 
 @app.route('/')
 def main():

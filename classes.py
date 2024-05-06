@@ -2,9 +2,11 @@ import abc
 import json
 import random
 import re
+
 import pymongo
 import datetime
 import numpy as np
+
 
 class SmartMonitoringSystem:
     def __init__(self, user, password):
@@ -47,7 +49,9 @@ class SmartMonitoringSystem:
     def change_password(self, request):
         # Проверяет наличие символов в обоих регистрах,
         # чисел, спецсимволов и минимальную длину 8 символов
+
         pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&__]{8,}$'
+
 
         try:
             if re.match(pattern, request.args.get('password_state', '')) is None:
@@ -64,7 +68,9 @@ class LifeQuality:
 
     def __init__(self, name, air_humidity = 50, temp = 20, brightness = 40):
         self.name_room = name
+
         self.temp = temp
+
         self.power = "on"
         print(f"For room {self.name_room} mean values of parameters are: air humidity: {air_humidity}, temperature: {temp}, brightness: {brightness}")
 
@@ -86,10 +92,12 @@ class LifeQuality:
         return json.dumps({"temp_state":self.temp})
 
     def change_temp(self, request, tmp, avg_temp):  # For 4s LAB
+
         try:
             int(request.args.get('temp_state', ''))
             self.temp = request.args.get('temp_state', '')
             print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
+
             return json.dumps({"temp": int(self.temp), "conditioner_state" : int(tmp), "avg_temp" : float(avg_temp)})
         except:
             print(f"New value has not accept, need int, but given {type(request.args.get('temp_state', ''))}")
@@ -131,6 +139,7 @@ class PersonalHealthcare(Item):
         self.activity = curr_activity
         return f"Your current activity is: {self.activity}"
 
+
     def connect(self, request, timer, avg_sleep, max_sleep):
         super().connect()
         try:
@@ -154,7 +163,9 @@ class Fridge(Item):
     def __init__(self, name, curr_full_state = 50):
         super().__init__(name)
         self.full_state = curr_full_state
+
         self.power = 50
+
         self.unit = "%"
         print(f"Fridge {self.name} is created, indication is {self.full_state} {self.unit}")
 
@@ -162,15 +173,20 @@ class Fridge(Item):
         self.full_state = curr_full_state
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
+
     def connect(self, request, power, min_fridge):
+
         try:
             float(request.args.get("fridge_full_state", ''))
             self.full_state = request.args.get("fridge_full_state", '')
             print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
+
             return json.dumps({"full_state": int(self.full_state), "fridge_power" : int(power), "fridge_min" : int(min_fridge)})
+
         except:
             print(f"Need float, but given {type(request.args.get('fridge_full_state', ''))}")
             return json.dumps({"full_state": "Full state fridge not was changed"})
+
 
         return ({"Power of fridge: ": self.power})
 
@@ -181,18 +197,22 @@ class Fridge(Item):
         self.power = 50 if int(full_state) < 30 else 100
         return self.power
 
+
 class CoffeeMachine(Item):
 
     def __init__(self, name, value = 30):
         super().__init__(name)
         self.value = value
+
         self.refill = ""
+
         self.unit = "%"
         print(f"Coffeemachine {self.name} is created, indication of bean level is {value} {self.unit}")
 
     def get_current_beans_count(self, curr_value):
         self.value = curr_value
         return(f"Coffeemachine {self.name} current indication of beans is {self.value} {self.unit}")
+
 
     def connect(self, request, refill, median):
         super().connect()
@@ -303,3 +323,4 @@ class Logger:
         if temp_data:
             return np.median(temp_data)
         return 10
+

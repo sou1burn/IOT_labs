@@ -1,3 +1,4 @@
+
 function submitPassword(){
     $.ajax({
     type: 'GET',
@@ -24,6 +25,7 @@ function submitTempState(){
         },
         success: function(response){
             document.getElementById("temp_state").value = response["temp"]
+
             updateConditioner(response, document.getElementById("temp_state").value)
             updateAvgTemp(response, document.getElementById("temp_state").value)
             }
@@ -61,6 +63,7 @@ function updateAvgTemp(response, temp_state) {
     }
     });
 }
+
 
 function submitSleepTime(){
     $.ajax({
@@ -128,6 +131,7 @@ function updateMaxSleep(response, sleep_time) {
     });
 }
 
+
 function submitFridgeValue(){
     $.ajax({
     type: 'GET',
@@ -139,6 +143,7 @@ function submitFridgeValue(){
     },
     success: function(response){
         document.getElementById("fridge_full_state").value = response["full_state"]
+
         updateFridgePower(response, document.getElementById("fridge_full_state").value)
         updateMinFridge(response, document.getElementById("fridge_full_state").value)
         }
@@ -177,6 +182,7 @@ function updateMinFridge(response, fridge_full_state ) {
     });
 }
 
+
 function submitCoffeeMachineValue(){
     $.ajax({
     type: 'GET',
@@ -188,6 +194,7 @@ function submitCoffeeMachineValue(){
     },
     success: function(response){
         document.getElementById("coffee_value").value = response["value"]
+
         updateCoffeeMachineStatus(response, document.getElementById("coffee_value").value)
         update_median_beans(response, document.getElementById("coffee_value").value)
         }
@@ -225,3 +232,4 @@ function update_median_beans(response, coffee_value) {
     }
     });
 }
+
