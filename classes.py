@@ -3,6 +3,10 @@ import json
 import random
 import re
 
+import pymongo
+import datetime
+import numpy as np
+
 
 class SmartMonitoringSystem:
     def __init__(self, user, password):
@@ -45,7 +49,9 @@ class SmartMonitoringSystem:
     def change_password(self, request):
         # Проверяет наличие символов в обоих регистрах,
         # чисел, спецсимволов и минимальную длину 8 символов
-        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$'
+
+        pattern = r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&__]{8,}$'
+
 
         try:
             if re.match(pattern, request.args.get('password_state', '')) is None:
@@ -62,6 +68,9 @@ class LifeQuality:
 
     def __init__(self, name, air_humidity = 50, temp = 20, brightness = 40):
         self.name_room = name
+
+        self.temp = temp
+
         self.power = "on"
         print(f"For room {self.name_room} mean values of parameters are: air humidity: {air_humidity}, temperature: {temp}, brightness: {brightness}")
 
@@ -82,15 +91,23 @@ class LifeQuality:
         print(f'Connection successfull. New temp: {self.temp}')
         return json.dumps({"temp_state":self.temp})
 
-    def change_temp(self, request):  # For 4s LAB
+    def change_temp(self, request, tmp, avg_temp):  # For 4s LAB
+
         try:
             int(request.args.get('temp_state', ''))
             self.temp = request.args.get('temp_state', '')
             print(f"Temperature for {self.name_room} was changed successfull! New temp '{self.temp}'")
-            return json.dumps({"temp":f"Temp is changed to {self.temp}"})
+
+            return json.dumps({"temp": int(self.temp), "conditioner_state" : int(tmp), "avg_temp" : float(avg_temp)})
         except:
             print(f"New value has not accept, need int, but given {type(request.args.get('temp_state', ''))}")
             return json.dumps({"temp": f"Temp is not changed, need integer"})
+        return  {"level of brightness:" : self.level}
+
+    def switch_conditioner(self, temp):
+        self.level = 25 if int(temp) < 12  else 22
+        return self.level
+
 
 class Item(abc.ABC):
 
@@ -106,7 +123,9 @@ class PersonalHealthcare(Item):
 
     def __init__(self, name,  pulse = 90, sleep_time = 8, activity = 10000):
         super().__init__(name)
+        self.sleep_time = sleep_time
         print(f"Your trackers say that you need {sleep_time} hours of sleep, {activity} in a day and pulse around {pulse} times per minute")
+        self.state = "Ok"
 
     def get_current_pulse(self, curr_pulse):
         self.pulse = curr_pulse
@@ -120,24 +139,33 @@ class PersonalHealthcare(Item):
         self.activity = curr_activity
         return f"Your current activity is: {self.activity}"
 
-    def connect(self, request):
+
+    def connect(self, request, timer, avg_sleep, max_sleep):
         super().connect()
         try:
-            float(request.args.get("sleep_time", ''))
-            self.sleep_time = request.args.get("sleep_time", '')
+            self.sleep_time = float(request.args.get("sleep_time", ''))
             print(f"Connection to {self.name} success, new sleep_time is '{self.sleep_time}'")
-            return json.dumps({'time':f"New sleep time is {self.sleep_time}"})
+            return json.dumps({'time': int(self.sleep_time), 'sleep_power': timer, 'avg_sleep' : float(avg_sleep), 'max_sleep' : int(max_sleep)})
         except:
             print(f"Need float, but given {type(request.args.get('sleep_time', ''))}")
             return json.dumps({'time': f"New sleep time not changed, need <float> type"})
+
+
     def emulation(self):
         self.sleep_time = random.randint(2, 5)
+
+    def goto_sleep(self, sleep_time):
+        self.state = "Срочно ложитесь спать!!" if int(sleep_time) < 3 else "Ok"
+        return self.state
 
 class Fridge(Item):
 
     def __init__(self, name, curr_full_state = 50):
         super().__init__(name)
         self.full_state = curr_full_state
+
+        self.power = 50
+
         self.unit = "%"
         print(f"Fridge {self.name} is created, indication is {self.full_state} {self.unit}")
 
@@ -146,25 +174,38 @@ class Fridge(Item):
         return(f"Fridge {self.name} current fullness is {self.value} {self.unit}")
 
 
-    def connect(self, request):
+    def connect(self, request, power, min_fridge):
+
         try:
             float(request.args.get("fridge_full_state", ''))
             self.full_state = request.args.get("fridge_full_state", '')
             print(f"Connection to {self.name} is success, new fridge full state is {self.full_state}")
-            return json.dumps({"full_state":f"Full state fridge was changed to {self.full_state}"})
+
+            return json.dumps({"full_state": int(self.full_state), "fridge_power" : int(power), "fridge_min" : int(min_fridge)})
+
         except:
             print(f"Need float, but given {type(request.args.get('fridge_full_state', ''))}")
             return json.dumps({"full_state": "Full state fridge not was changed"})
 
 
+        return ({"Power of fridge: ": self.power})
+
     def emulation(self):
         self.value = round(random.random(), 2)
 
+    def state_change(self, full_state):
+        self.power = 50 if int(full_state) < 30 else 100
+        return self.power
+
+
 class CoffeeMachine(Item):
 
-    def __init__(self, name, value = 50):
+    def __init__(self, name, value = 30):
         super().__init__(name)
         self.value = value
+
+        self.refill = ""
+
         self.unit = "%"
         print(f"Coffeemachine {self.name} is created, indication of bean level is {value} {self.unit}")
 
@@ -172,15 +213,114 @@ class CoffeeMachine(Item):
         self.value = curr_value
         return(f"Coffeemachine {self.name} current indication of beans is {self.value} {self.unit}")
 
-    def connect(self, request):
+
+    def connect(self, request, refill, median):
         super().connect()
         try:
-            float(request.args.get("coffee_value", ''))
             self.value = request.args.get("coffee_value", '')
+            self.refill = request.args.get("Refill", '')
             print(f"connection to {self.name} has started")
-            return json.dumps({'value': f"New value for coffee: {self.value}{self.unit}"})
+            return json.dumps({'value': int(self.value), 'Refill': refill, 'beans_median' : float(median)})
         except:
             print("New value for coffee was not update")
-            return json.dumps({'value':"New value for coffee was not update"})
+            return json.dumps({'value':"New value for coffee was not updated", "Refill": "smth broke..", 'beans_median' : "wtf"})
+
     def emulation(self):
         self.value = random.randint(50, 100)
+
+    def needs_refill(self, value):
+        value = int(self.value)
+        self.refill = "Need a refill" if value < 20  else "Ok"
+        return self.refill
+
+class Logger:
+    def __init__(self, db_name):
+        self.current_temperature = []
+        self.current_fridge_state = []
+        self.passwords = []
+        self.coffee_beans = []
+        self.sleep_time = []
+        self.client = pymongo.MongoClient('mongodb://localhost:27017/')
+        self.db = self.client[db_name]
+    def insert_temperature(self, new_data):
+         if new_data != self.current_temperature:
+             self.current_temperature.append(int(new_data))
+             return self.db['Temperature'].insert_one({'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                                                          'Temperature': int(new_data)})
+         print('Value has not changed')
+
+    def insert_fridge_state(self, new_data):
+        if new_data != self.current_fridge_state:
+            self.current_fridge_state.append(int(new_data))
+            return self.db['Fridge state'].insert_one(
+                {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                 'Fridge state': int(new_data)})
+
+        print('Value has not changed')
+
+
+    def insert_password(self, new_data):
+        if new_data != self.passwords:
+            self.passwords.append(int(new_data))
+            return self.db['Password'].insert_one(
+            {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"New Password": int(new_data)})
+
+        print('Value has not changed')
+
+    def insert_coffee_beans(self, new_data):
+        if new_data != self.coffee_beans:
+            self.coffee_beans.append(int(new_data))
+            print(type(new_data))
+            return self.db['Coffee beans'].insert_one(
+                {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "New beans count": int(new_data)})
+        print('Value has not changed')
+
+
+    def insert_sleep_time(self, new_data):
+        if new_data != self.sleep_time:
+            self.sleep_time.append(int(new_data))
+            return self.db['Sleep time'].insert_one(
+                {'timeStamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "New sleep time": int(new_data)})
+
+        print('Value has not changed')
+
+    def avg_temp(self):
+        cursor = self.db['Temperature'].find()
+        temp_data = []
+        for elem in cursor:
+            temp_data.append(int(elem['Temperature']))
+        if temp_data:
+            return round(np.mean(temp_data), 1)
+        return 11
+
+    def avg_sleep(self):
+        cursor = self.db['Sleep time'].find()
+        temp_data = []
+        for elem in cursor:
+            temp_data.append(int(elem['New sleep time']))
+        if temp_data:
+            return round(np.mean(temp_data), 1)
+
+    def max_sleep(self):
+        cursor = self.db['Sleep time'].find()
+        temp_data = []
+        for elem in cursor:
+            temp_data.append(int(elem['New sleep time']))
+        return max(temp_data)
+
+    def min_fridge_state(self):
+        cursor = self.db['Fridge state'].find()
+        temp_data = []
+        for elem in cursor:
+            temp_data.append(int(elem['Fridge state']))
+        return min(temp_data)
+
+    def median_beans(self):
+        cursor = self.db['Coffee beans'].find()
+        temp_data = []
+        for elem in cursor:
+            temp_data.append(int(elem['New beans count']))
+        if temp_data:
+            return np.median(temp_data)
+        return 10
+
